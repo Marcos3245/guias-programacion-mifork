@@ -440,28 +440,203 @@ En resumen, los setters no son obligatorios y su inclusión depende de la lógic
 ## 19. ¿La clase `String` en Java es mutable o inmutable? ¿Qué ocurre al concatenar dos cadenas? ¿Qué debemos hacer si vamos a hacer una operación que implique concatenar muchas veces para construir paso a paso una cadena muy larga?
 
 ### Respuesta
+La clase `String` en Java es **inmutable**. Esto significa que, una vez creado un objeto `String`, su contenido no puede modificarse. Cualquier operación que aparentemente cambie la cadena en realidad crea un **nuevo objeto** `String` con el nuevo contenido, dejando intacto el original. Esta inmutabilidad aporta ventajas como seguridad, simplicidad en concurrencia y posibilidad de reutilización interna (por ejemplo, el *string pool*).
+
+Cuando concatenamos dos cadenas, por ejemplo:
+
+```java
+String s = "Hola";
+s = s + " mundo";
+```
+
+no se modifica la cadena original `"Hola"`. En realidad, se crea un nuevo objeto `String` con el contenido `"Hola mundo"`, y la variable `s` pasa a referenciar ese nuevo objeto. La cadena anterior queda disponible para el recolector de basura si no hay más referencias a ella. Por tanto, cada concatenación implica la creación de un nuevo objeto en memoria.
+
+Si necesitamos construir una cadena muy larga mediante muchas concatenaciones (por ejemplo, dentro de un bucle), no es eficiente usar `String` con el operador `+`, ya que se crearían muchos objetos intermedios. En esos casos, se recomienda usar clases como `StringBuilder` (o `StringBuffer` si se necesita sincronización), que son **mutables** y permiten modificar el contenido sin crear un nuevo objeto en cada operación. Una vez finalizada la construcción, se puede convertir a `String` con el método `toString()`. Esto mejora significativamente el rendimiento y el uso de memoria.
 
 
 ## 20. En POO ¿Cómo se comparan objetos de una misma clase? ¿Por su contenido o por su identidad? ¿Qué es el método equals en Java? ¿Qué hace por defecto? ¿Cómo se deben comparar dos cadenas en Java? 
 
 ### Respuesta
+En POO, los objetos pueden compararse de dos formas: **por identidad** o **por contenido**. Comparar por identidad significa comprobar si dos referencias apuntan exactamente al mismo objeto en memoria. Comparar por contenido significa comprobar si los valores internos (atributos) de ambos objetos son equivalentes. Son conceptos distintos: dos objetos diferentes pueden tener el mismo contenido pero no ser el mismo objeto.
+
+En Java, el operador `==` compara **identidad**, es decir, si dos referencias apuntan al mismo objeto. Para comparar por contenido se utiliza el método `equals()`. Este método está definido en la clase base `Object`, por lo que todas las clases lo heredan. Sin embargo, su implementación por defecto en `Object` se comporta igual que `==`: compara identidad, no contenido.
+
+Por eso, si queremos que dos objetos de una clase se comparen por su contenido, debemos **sobrescribir el método `equals()`** en esa clase. Por ejemplo, en una clase `Punto`, tendría sentido que dos puntos sean iguales si sus coordenadas `x` e `y` son iguales, aunque sean objetos distintos en memoria.
+
+En el caso de las cadenas (`String`) en Java, se deben comparar usando `equals()` y no `==`. Por ejemplo:
+
+```java
+String a = new String("hola");
+String b = new String("hola");
+
+System.out.println(a == b);       // false (distintos objetos)
+System.out.println(a.equals(b));  // true (mismo contenido)
+```
+
+Aunque ambas cadenas contienen el mismo texto, `==` devuelve `false` porque son objetos distintos. `equals()` devuelve `true` porque compara el contenido. Por tanto, en Java, cuando se quiere comparar el contenido de objetos, especialmente `String`, se debe usar siempre `equals()`.
 
 
 ## 21. ¿Qué son las clases "wrapper" en un lenguaje de programación orientado a objetos? ¿Cómo se hace? ¿Es un proceso automático? ¿Qué ventajas tienen? ¿Todos los lenguajes orientados a objetos tienen tipos primitivos y necesitan wrappers? 
 
 ### Respuesta
+Las **clases wrapper** (o clases envoltorio) son clases que encapsulan un **tipo primitivo** dentro de un objeto. En Java, por ejemplo, los tipos primitivos como `int`, `double`, `char` o `boolean` no son objetos, pero existen clases asociadas como `Integer`, `Double`, `Character` y `Boolean` que permiten tratarlos como tales. Estas clases “envuelven” el valor primitivo y lo convierten en una instancia de una clase, permitiendo usarlo en contextos donde se requieren objetos.
+
+En Java, el proceso puede hacerse de forma explícita o automática. Explícitamente, se puede crear un objeto wrapper así:
+
+```java id="exw123"
+Integer n = Integer.valueOf(10);
+```
+
+Sin embargo, desde Java 5 existe el **autoboxing y unboxing**, que realiza la conversión automáticamente:
+
+```java id="exw124"
+Integer n = 10;      // autoboxing (int → Integer)
+int x = n;           // unboxing (Integer → int)
+```
+
+El compilador se encarga de convertir entre tipos primitivos y sus wrappers cuando es necesario. Esto facilita el uso de colecciones como `ArrayList<Integer>`, que solo pueden almacenar objetos y no tipos primitivos.
+
+Las ventajas de las clases wrapper son principalmente:
+
+* Permiten usar valores primitivos en estructuras que requieren objetos (como colecciones genéricas).
+* Proporcionan métodos útiles asociados al tipo (por ejemplo, `Integer.parseInt()` o `Double.compare()`).
+* Permiten trabajar con valores `null`, algo que no es posible con tipos primitivos.
+
+No todos los lenguajes orientados a objetos necesitan wrappers. En algunos lenguajes, como Python, **todos los valores son objetos**, por lo que no existen tipos primitivos separados y no se requieren clases wrapper. En cambio, en lenguajes como Java o C#, donde existen tipos primitivos diferenciados por razones de eficiencia, sí es necesario disponer de wrappers para integrarlos en el modelo orientado a objetos.
 
 
 ## 22. ¿En POO qué es un **tipo de dato enumerado**? ¿En Java, un tipo de dato enumerado es una clase? ¿Qué ventajas tienen en términos de encapsulación los enumerados en Java?
 
 ### Respuesta
+En POO, un **tipo de dato enumerado (enum)** es un tipo especial que define un conjunto **finito y fijo de valores posibles**. Se utiliza cuando una variable solo puede tomar uno de varios valores predefinidos, como los días de la semana, los estados de un pedido o los puntos cardinales. Su objetivo es mejorar la claridad del código y evitar errores derivados del uso de constantes numéricas o cadenas de texto arbitrarias.
+
+En Java, un tipo enumerado **sí es una clase especial**. Cuando declaras un `enum`, el compilador genera una clase que hereda implícitamente de `java.lang.Enum`. Por ejemplo:
+
+```java id="enu123"
+public enum Dia {
+    LUNES, MARTES, MIERCOLES, JUEVES, VIERNES, SABADO, DOMINGO
+}
+```
+
+Aquí, `Dia` es en realidad una clase cuyos valores (`LUNES`, `MARTES`, etc.) son instancias únicas y estáticas de esa clase. Esto significa que los enumerados en Java no son simples constantes simbólicas como en C tradicional, sino objetos completos con comportamiento.
+
+Una de las grandes ventajas de los enumerados en Java en términos de encapsulación es que pueden incluir **atributos, constructores y métodos**, y mantenerlos privados si es necesario. Por ejemplo, un `enum` puede asociar un número o descripción a cada valor y exponer métodos públicos para consultarlos, manteniendo los detalles internos ocultos. Además, al limitar los valores posibles a un conjunto cerrado, se refuerzan las invariantes del programa y se evita que se asignen valores inválidos.
+
+En resumen, los enumerados en Java combinan seguridad de tipos, claridad semántica y encapsulación, ofreciendo una solución mucho más robusta que el uso de constantes enteras o cadenas para representar conjuntos cerrados de valores.
 
 
 ## 23. Crea un tipo enumerado en Java que se llame `Mes`, con doce posibles instancias y que además proporcione métodos para obtener cuántos días tiene ese mes, el ordinal de ese mes en el año (1-12), empleando atributos privados y constructores del tipo enumerado.
 
 ### Respuesta
+Aquí tienes un tipo enumerado `Mes` en Java que define los doce meses del año y que incluye atributos privados, constructor y métodos públicos para obtener el número de días y el ordinal del mes:
+
+```java
+public enum Mes {
+
+    ENERO(1, 31),
+    FEBRERO(2, 28),
+    MARZO(3, 31),
+    ABRIL(4, 30),
+    MAYO(5, 31),
+    JUNIO(6, 30),
+    JULIO(7, 31),
+    AGOSTO(8, 31),
+    SEPTIEMBRE(9, 30),
+    OCTUBRE(10, 31),
+    NOVIEMBRE(11, 30),
+    DICIEMBRE(12, 31);
+
+    private final int ordinal;   // 1-12
+    private final int dias;      // número de días (sin considerar año bisiesto)
+
+    // Constructor privado implícito (siempre lo es en enum)
+    private Mes(int ordinal, int dias) {
+        this.ordinal = ordinal;
+        this.dias = dias;
+    }
+
+    public int getOrdinal() {
+        return ordinal;
+    }
+
+    public int getDias() {
+        return dias;
+    }
+}
+```
+
+Observaciones importantes:
+
+* En Java, el constructor de un `enum` es siempre implícitamente `private`; no se pueden crear nuevas instancias desde fuera.
+* Cada constante (`ENERO`, `FEBRERO`, etc.) es una instancia única del tipo `Mes`.
+* Los atributos son `private final`, lo que garantiza inmutabilidad y refuerza la encapsulación.
+* La lógica y los datos asociados a cada mes están encapsulados dentro del propio enumerado.
+
+Ejemplo de uso:
+
+```java
+Mes m = Mes.ABRIL;
+System.out.println(m.getOrdinal()); // 4
+System.out.println(m.getDias());    // 30
+```
+
+Este diseño muestra cómo los enumerados en Java son clases completas, con estado y comportamiento, manteniendo un conjunto cerrado y seguro de instancias posibles.
 
 
 ## 24. Añade a la clase `Mes` del ejercicio anterior cuatro métodos para devolver si ese mes tiene algunos días de invierno, primavera, verano u otoño, indicando con un booleano el hemisferio (norte o sur, parámetro `enHemisferioNorte`). Es decir: `esDePrimavera(boolean esHemisferioNorte)`, `esDeVerano(boolean esHemisferioNorte)`, `esDeOtoño(boolean esHemisferioNorte)`, `esDeInvierno(boolean esHemisferioNorte)`
 
 ### Respuesta
+Vamos a ampliar el `enum Mes` añadiendo comportamiento estacional. No vamos a complicarnos con solsticios astronómicos exactos; usaremos la división clásica por meses completos. Es un modelo simplificado, pero coherente y determinista (como le gusta al compilador).
+
+En el hemisferio norte:
+
+* Invierno: DICIEMBRE, ENERO, FEBRERO
+* Primavera: MARZO, ABRIL, MAYO
+* Verano: JUNIO, JULIO, AGOSTO
+* Otoño: SEPTIEMBRE, OCTUBRE, NOVIEMBRE
+
+En el hemisferio sur se invierten.
+
+Aquí están los cuatro métodos añadidos al `enum`:
+
+```java
+public boolean esDePrimavera(boolean esHemisferioNorte) {
+    if (esHemisferioNorte) {
+        return this == MARZO || this == ABRIL || this == MAYO;
+    } else {
+        return this == SEPTIEMBRE || this == OCTUBRE || this == NOVIEMBRE;
+    }
+}
+
+public boolean esDeVerano(boolean esHemisferioNorte) {
+    if (esHemisferioNorte) {
+        return this == JUNIO || this == JULIO || this == AGOSTO;
+    } else {
+        return this == DICIEMBRE || this == ENERO || this == FEBRERO;
+    }
+}
+
+public boolean esDeOtoño(boolean esHemisferioNorte) {
+    if (esHemisferioNorte) {
+        return this == SEPTIEMBRE || this == OCTUBRE || this == NOVIEMBRE;
+    } else {
+        return this == MARZO || this == ABRIL || this == MAYO;
+    }
+}
+
+public boolean esDeInvierno(boolean esHemisferioNorte) {
+    if (esHemisferioNorte) {
+        return this == DICIEMBRE || this == ENERO || this == FEBRERO;
+    } else {
+        return this == JUNIO || this == JULIO || this == AGOSTO;
+    }
+}
+```
+
+Detalles interesantes:
+
+* `this` se refiere a la instancia concreta del enum (por ejemplo, `Mes.ABRIL`).
+* No usamos `ordinal()` porque sería frágil: si alguien reordenara los meses, rompería la lógica.
+* El diseño mantiene la encapsulación: la lógica de pertenencia estacional está dentro del propio tipo `Mes`.
+
+Si quisiéramos ser aún más elegantes, podríamos definir una pequeña lógica basada en el ordinal y desplazar seis meses cuando el hemisferio sea sur. Eso convertiría el problema estacional en aritmética modular. Matemática sencilla… y el planeta girando tranquilamente mientras nuestro enum decide en qué estación está.
