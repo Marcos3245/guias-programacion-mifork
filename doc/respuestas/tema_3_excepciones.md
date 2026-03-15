@@ -386,7 +386,7 @@ En Java, las excepciones se dividen en **controladas (checked)** y **no controla
 
 Ejemplos típicos:
 
-* `IOException` – error al leer o escribir un archivo.
+* `IOException` – error al leer o escribir un archivo o `AccessDeniedException` que hereda de esta.
 * `FileNotFoundException` – archivo no encontrado al intentar abrirlo.
 * `SQLException` – fallo al acceder a una base de datos.
 * Excepciones personalizadas que representen condiciones recuperables, por ejemplo, `SaldoInsuficienteException` en una clase `CuentaBancaria`.
@@ -408,8 +408,8 @@ Situaciones donde **se suele preferir una excepción controlada**:
 
 Ejemplos típicos:
 
-* `NullPointerException` – acceso a un objeto nulo.
-* `ArrayIndexOutOfBoundsException` – índice fuera de los límites de un arreglo.
+* `NullPointerException` – acceso a un objeto nulo (cuando se intenta acceder a elementos que todavía no se han usado, por ejemplo).
+* `ArrayIndexOutOfBoundsException` – índice fuera de los límites de un array.
 * `ArithmeticException` – división por cero.
 * Excepciones personalizadas que indican un fallo lógico, como `OperacionInvalidaException` para una operación que viola reglas internas de la aplicación.
 
