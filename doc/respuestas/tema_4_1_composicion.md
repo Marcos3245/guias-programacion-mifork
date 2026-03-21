@@ -115,6 +115,15 @@ Desde **`Linea` hacia `Punto`**, la multiplicidad es **2** (o `2..2`). Esto sign
 
 Desde **`Punto` hacia `Linea`**, la multiplicidad es **0..***. Esto indica que un mismo punto puede no pertenecer a ninguna línea o puede formar parte de varias líneas distintas. Por ejemplo, el mismo objeto `Punto` podría utilizarse como extremo de varias líneas diferentes dentro de un programa.
 
+*//Anexo: Notación UML*
+Las clases se designan con cajitas separadas en tres cuadrados (nombre, atributos, métodos). Una clase compuesta se designa con una línea sólida que une dos cajitas. La multiplicidad viene dada por la siguiente notación:
+Elem_Mín..Elem_Máx. Ejemplos:
+- 0..2
+- 1..1
+- 1..*
+
+Linea 2..2 con Punto (Una línea tiene 2 puntos)
+Punto 0..* con Linea (Un punto tiene asociadas las líneas que se quiera)
 
 ## 4. ¿Qué significa composición **fuerte** y composición **débil**? ¿Qué consecuencia implica en relación al ciclo de vida de los objetos? Indica a cuál solemos referirnos como **"asociación o agregación"** y a cuál como **"composición"** propiamente.
 
@@ -126,6 +135,10 @@ La **composición fuerte** implica una relación muy estrecha entre el objeto co
 En cambio, la **composición débil** ocurre cuando un objeto simplemente mantiene referencias a otros objetos, pero **estos pueden existir independientemente**. El objeto contenedor no controla necesariamente su creación ni su destrucción, y los mismos objetos pueden estar asociados a varios contenedores. En este caso los ciclos de vida son independientes: si el objeto contenedor desaparece, los otros objetos pueden seguir existiendo.
 
 Por esta razón, la composición débil suele denominarse **agregación** o **asociación**, mientras que el término **composición** en sentido estricto se reserva para la composición fuerte. La diferencia principal entre ambas está en la **dependencia del ciclo de vida** entre los objetos involucrados.
+
+*//Nota: La composición fuerte o composición a secas se designa con un rombo relleno en UML.
+La agregación por su parte es con un rombo vacío y consiste en una clase contenedora de objetos de otra clase.
+La asociación se designa con una línea sólida y consiste en una clase que contiene referencias a objetos de otra con los que trabaja.*
 
 
 ## 5. Cuando una clase usa a otra al recibirla o devolverla como parámetro en algún método, al hacer `new` dentro de un método, o al usarlas como variables locales, ¿hablamos de composición o de **"dependencia"**?
@@ -199,6 +212,8 @@ public class Linea {
 
 La diferencia principal entre ambos enfoques es el **control del ciclo de vida de los objetos**. En la composición fuerte, `Linea` crea y posee completamente sus puntos, mientras que en la composición débil los puntos existen por separado y la línea simplemente mantiene referencias a ellos.
 
+*//Nota IMPORTANTE: Si hacemos getters o sencillamente damos acceso en la interfaz pública a los atributos en una composición fuerte, puede darse el caso de que sean modificados, copiados, eliminados... Desde fuera, lo cual rompe la composición fuerte.*
+
 
 ## 7. En Java, en la composición fuerte, ¿cuando el contenedor destruye los objetos? No se observa que `Linea` destruya los `Punto` explícitamente, ¿Por qué?
 
@@ -211,6 +226,7 @@ Como consecuencia, los objetos `Punto` también se vuelven inaccesibles y el **g
 
 Por tanto, en Java la composición fuerte se expresa principalmente a través del **diseño del programa** (quién crea los objetos y quién mantiene las referencias), mientras que la destrucción real de los objetos se gestiona automáticamente mediante el sistema de recolección de basura del lenguaje.
 
+*//Nota: Cuando el objeto Linea deja de ser referenciado desde el main, también se pierden las referencias a los puntos que contiene, por eso el Garbage Collector se encarga de eliminar todo. Esto por supuesto solo pasa si se da una composición fuerte, en caso contrario. Los objetos Punto pueden seguir siendo referenciados por el main, quizás.*
 
 ## 8. Pon un ejemplo de composicion débil entre un departamento que tiene varios profesores. Implementa dos composiciones a la vez: entre el departamento y todos sus profesores y entre el departamento y su director, que es un profesor del departamento. Siempre debe haber un director en el departamento desde el inicio. Lanza excepciones si se viola la invariante. Emplea arrays primitivos de Java, estilo `Profesor[]`, con máximo 50, pero no rompas la encapsulación, no desveles que estás empleando un array, permite añadir un `Profesor` al final de la lista, y eliminar un profesor dada su posición. Da acceso a los profesores con un método para saber cuántos hay y otro para obtener un profesor por posición. El director se puede cambiar por otro profesor del departamento. Sin embargo, ten en cuenta esta invariante de clase: el director debe formar siempre parte de la lista de profesores, es decir, ten cuidado al cambiar el director o al eliminar un profesor.
 
