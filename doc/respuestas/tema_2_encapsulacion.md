@@ -165,7 +165,7 @@ Sin embargo, si otra clase diferente intentara acceder directamente a `x` o `y`,
 
 ## 9. ¿Qué son los métodos "getter" y "setter" en los lenguajes orientados a objetos?
 
-### Respuesta
+### Respuesta 
 Los métodos **getter** y **setter** son métodos utilizados para acceder y modificar los atributos privados de una clase de forma controlada. Se emplean como parte del principio de encapsulación: en lugar de permitir el acceso directo a los atributos, se declaran como `private` y se proporcionan métodos públicos para leerlos o modificarlos.
 
 Un **getter** es un método que devuelve el valor de un atributo. Normalmente no recibe parámetros y su nombre suele empezar por `get`, seguido del nombre del atributo. Por ejemplo, `getEdad()` devuelve el valor del atributo `edad`. Un **setter** es un método que permite modificar el valor de un atributo. Recibe como parámetro el nuevo valor y suele llamarse `setEdad()`, `setNombre()`, etc.
