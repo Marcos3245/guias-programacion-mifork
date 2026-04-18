@@ -98,6 +98,8 @@ Sin embargo, que un atributo exista en memoria **no implica que sea accesible di
 
 En el ejemplo, cuando se crea un `Artillero`, el atributo `nombre` se inicializa en el constructor de `Soldado` y queda almacenado dentro del objeto. El método `saludar()` funciona correctamente porque pertenece a `Soldado` y sí puede acceder a ese atributo privado. En cambio, si en `Artillero` se intentase imprimir `nombre` directamente, el compilador generaría un error. Esto refuerza la idea de encapsulación: el estado heredado **forma parte del objeto**, pero su acceso sigue estando controlado por la clase que lo define.
 
+*Nota de clase: En pocas palabras, private afecta a la accesibilidad de los miembros de la clase desde una clase u otra, no a la forma de guardarlo el memoria. El miembro siempre existe en la subclase para que el objeto funcione, pero puede o no ser accesible.
+
 
 ## 4. ¿Qué implica en términos de **extensibilidad** de código el hecho de que sean compatibles a nivel de tipos? Ilustra esto añadiendo un nuevo tipo de `Soldado` y demostrando que el código para pedir el saludo a todos los soldados no se modifica.
 
